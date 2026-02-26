@@ -826,6 +826,16 @@ LUALIB_API int luaopen_base (lua_State *L) {
     return 2;
 }
 
+LUALIB_API int luaopen_securecalls (lua_State *L) {
+    lua_pushcfunction(L, luaB_securecall);
+    lua_setglobal(L, "securecall");
+    lua_pushcfunction(L, luaB_securecallfunction);
+    lua_setglobal(L, "securecallfunction");
+    lua_pushcfunction(L, luaB_secureexecuterange);
+    lua_setglobal(L, "secureexecuterange");
+    return 0;
+}
+
 LUALIB_API int luaopen_elune_base (lua_State *L) {
     /* set field '_G' */
     lua_pushvalue(L, LUA_ENVIRONINDEX);
