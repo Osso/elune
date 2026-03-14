@@ -23,6 +23,7 @@
 #include "lstring.h"
 #include "ltable.h"
 #include "ltm.h"
+#include "lundump.h"
 #include "lvm.h"
 #include "lzio.h"
 
@@ -558,11 +559,15 @@ struct SParser { /* data to `f_parser' */
 
 static void f_parser (lua_State *L, void *ud) {
     int i;
+    int c;
     Proto *tf;
     Closure *cl;
     struct SParser *p = cast(struct SParser *, ud);
     luaC_checkGC(L);
-    tf = luaY_parser(L, p->z, &p->buff, p->name);
+    c = luaZ_lookahead(p->z);
+    tf = (c == LUA_SIGNATURE[0])
+             ? luaU_undump(L, p->z, &p->buff, p->name)
+             : luaY_parser(L, p->z, &p->buff, p->name);
     cl = luaF_newLclosure(L, tf, hvalue(gt(L)));
     for (i = 0; i < tf->nups; i++) { /* initialize eventual upvalues */
         cl->l.upvals[i] = luaF_newupval(L);
